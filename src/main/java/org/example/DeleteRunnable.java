@@ -1,7 +1,7 @@
 package org.example;
 
 public class DeleteRunnable implements Runnable{
-    private Database db = new Database();
+    final private Database db = new Database();
 
     @Override
     public void run(){

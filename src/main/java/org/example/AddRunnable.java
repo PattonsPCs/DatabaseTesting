@@ -1,10 +1,11 @@
 package org.example;
 
 public class AddRunnable implements Runnable{
+    private final Database db = new Database();
+
 
     @Override
     public void run(){
-        Database db = new Database();
         db.createTable();
 
         for (int i = 0; i < 10; i++){

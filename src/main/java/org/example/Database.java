@@ -5,11 +5,12 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Database {
-
-
     private final HikariDataSource dataSource;
+    private static final Logger logger = LoggerFactory.getLogger(Database.class);
     public Database() {
         HikariConfig config = new HikariConfig();
 
@@ -24,7 +25,7 @@ public class Database {
         try(Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()){
             statement.execute("CREATE TABLE IF NOT EXISTS entries (entry_ID INTEGER PRIMARY KEY, entry_TEXT TEXT)");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error creating table: ",  e);
         }
     }
 
@@ -34,7 +35,7 @@ public class Database {
             prepStmt.setString(1, entryText);
             prepStmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error adding entry: ", e);
         }
     }
 
@@ -42,7 +43,7 @@ public class Database {
         String sql = "DELETE FROM entries WHERE entry_TEXT = ?";
         try (Connection connection = dataSource.getConnection(); PreparedStatement stmt = connection.prepareStatement(sql)){
             stmt.setString(1, entryText);
-            System.out.println("Attemping to delete entry: '" + entryText + "'");
+            System.out.println("Attempting to delete entry: '" + entryText + "'");
             int rowsAffected = stmt.executeUpdate();
             if(rowsAffected > 0){
                 System.out.println("Entry deleted successfully.");
@@ -50,7 +51,7 @@ public class Database {
                 System.out.println("No entry found with the provided text.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error deleting entry: ", e);
         }
     }
 
@@ -68,7 +69,7 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
             return resultSet.getInt(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error getting table length: ", e);
             return -1;
         }
     }
