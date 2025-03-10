@@ -74,14 +74,48 @@ public class Database {
         }
     }
 
+    public String getID(){
+        String sql = "SELECT entry_ID FROM entries";
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println("Trying to get ID...");
+            if(resultSet.next()){
+                return resultSet.getNString("entry_ID");
+            }
+            else{
+                return null;
+            }
+        } catch (SQLException e){
+            logger.error("Error getting ID: ", e);
+            return "Error Thrown.";
+        }
+    }
+
+    public String getValue(){
+        String sql = "SELECT entry_TEXT FROM entries";
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println("Trying to get value...");
+            if(resultSet.next()){
+                return resultSet.getNString("entry_TEXT");
+            }
+            else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error getting value: ", e);
+            return "Error Thrown.";
+        }
+    }
+
     public static void main(String[] args) {
         Database db = new Database();
         db.createTable();
 
+        Thread getThread = new Thread(new GetRunnable());
 
-        Thread deleteThread = new Thread(new DeleteRunnable());
-        Thread addThread = new Thread(new AddRunnable());
-        deleteThread.start();
+        getThread.start();
         db.close();
     }
 }
